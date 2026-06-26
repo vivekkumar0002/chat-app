@@ -1,19 +1,28 @@
-"use client";
-
-import { useState, KeyboardEvent, FormEvent } from "react";
-import { Send, Smile } from "lucide-react";
+"use client"; 
+import { useState, useRef, KeyboardEvent, FormEvent } from "react";
+import { Send, Smile, Image as ImageIcon } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
+
 
 interface MessageInputProps {
   onSend: (content: string) => void;
   onTyping: () => void;
   onStopTyping: () => void;
+
+  onImageSelect: (file: File) => void;
+
   disabled?: boolean;
 }
-
-export function MessageInput({ onSend, onTyping, onStopTyping, disabled }: MessageInputProps) {
+export function MessageInput({
+  onSend,
+  onTyping,
+  onStopTyping,
+  onImageSelect,
+  disabled,
+}: MessageInputProps) {
   const [value, setValue] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -67,6 +76,26 @@ export function MessageInput({ onSend, onTyping, onStopTyping, disabled }: Messa
     </div>
   )}
 </div>
+<input
+  ref={fileInputRef}
+  type="file"
+  accept="image/*,video/*"
+  className="hidden"
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImageSelect(file);
+    }
+  }}
+/>
+
+<button
+  type="button"
+  onClick={() => fileInputRef.current?.click()}
+  className="flex h-10 w-10 items-center justify-center rounded-full border"
+>
+  <ImageIcon className="h-5 w-5" />
+</button>
       <button
         type="submit"
         disabled={disabled || !value.trim()}

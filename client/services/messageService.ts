@@ -10,12 +10,35 @@ export const messageService = {
     return res.data.data.messages;
   },
 
-  // REST fallback; primary send path is the Socket.IO `send_message` event.
   async sendMessage(conversationId: string, content: string) {
-    const res = await apiClient.post<ApiResponse<{ message: Message }>>("/messages", {
-      conversationId,
-      content,
-    });
+    const res = await apiClient.post<ApiResponse<{ message: Message }>>(
+      "/messages",
+      {
+        conversationId,
+        content,
+      }
+    );
+
     return res.data.data.message;
+  },
+
+  async uploadImage(file: File) {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await apiClient.post<
+      ApiResponse<{
+        url: string;
+        publicId: string;
+      }>
+
+    >("/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("UPLOAD RESPONSE:", res.data);
+
+    return res.data.data;
   },
 };

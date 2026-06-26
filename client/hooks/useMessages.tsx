@@ -103,6 +103,41 @@ export function useMessages(conversationId: string | null, currentUserId: string
     },
     [conversationId, socket]
   );
+  const sendImage = useCallback(
+    async (file: File) => {
+      if (!conversationId) return;
+  
+      try {
+        const uploaded = await messageService.uploadImage(file);
+  
+        const isVideo = file.type.startsWith("video/");
+  
+        if (socket && socket.connected) {
+          socket.emit("send_message", {
+            conversationId,
+            content: "",
+            messageType: isVideo ? "VIDEO" : "IMAGE",
+  
+            imageUrl: isVideo ? undefined : uploaded.url,
+            videoUrl: isVideo ? uploaded.url : undefined,
+          });
+        }
+      } catch (error: any) {
+        console.error("UPLOAD ERROR:", error);
+        console.error("RESPONSE:", error?.response?.data);
+        console.error("STATUS:", error?.response?.status);
+  
+        setError("Failed to upload file");
+      }
+    },
+    [conversationId, socket]
+  );
 
-  return { messages, isLoading, error, sendMessage };
+  return {
+    messages,
+    isLoading,
+    error,
+    sendMessage,
+    sendImage,
+  };
 }

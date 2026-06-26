@@ -30,7 +30,10 @@ function ChatDashboard() {
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
   const [showSidebarOnMobile, setShowSidebarOnMobile] = useState(true);
 
-  const { messages, sendMessage } = useMessages(activeConversation?.id ?? null, user?.id);
+  const { messages, sendMessage, sendImage } = useMessages(
+    activeConversation?.id ?? null,
+    user?.id
+  );
 
   const otherParticipant = activeConversation?.participants.find((p) => p.userId !== user?.id);
   const otherUser = otherParticipant?.user;
@@ -118,10 +121,11 @@ function ChatDashboard() {
               otherUserName={otherUser.name}
             />
             <MessageInput
-              onSend={sendMessage}
-              onTyping={notifyTyping}
-              onStopTyping={stopTyping}
-            />
+             onSend={sendMessage}
+             onStopTyping={stopTyping}
+             onImageSelect={sendImage}
+             onTyping={notifyTyping}
+             />
           </>
         ) : (
           <EmptyState

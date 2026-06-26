@@ -21,9 +21,31 @@ export function MessageBubble({ message, isOwn, showSenderName }: MessageBubbleP
         {showSenderName && !isOwn && message.sender && (
           <p className="mb-0.5 text-xs font-semibold text-blue-500">{message.sender.name}</p>
         )}
-        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-          {message.content}
-        </p>
+        {message.messageType === "VIDEO" && message.videoUrl ? (
+  <video
+    controls
+    className="max-w-[350px] max-h-[350px] rounded-lg"
+  >
+    <source src={message.videoUrl} />
+    Your browser does not support video playback.
+  </video>
+) : message.messageType === "IMAGE" && message.imageUrl ? (
+  <a
+    href={message.imageUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <img
+      src={message.imageUrl}
+      alt="Shared image"
+      className="max-w-[300px] max-h-[300px] rounded-lg cursor-pointer hover:opacity-90"
+    />
+  </a>
+) : (
+  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
+    {message.content}
+  </p>
+)}
         <div
           className={`mt-1 flex items-center justify-end gap-1 text-[11px] ${
             isOwn ? "text-blue-100" : "text-gray-400"
